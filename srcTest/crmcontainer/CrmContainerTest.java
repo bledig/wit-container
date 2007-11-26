@@ -32,6 +32,11 @@ public class CrmContainerTest {
 	public void setUp() throws Exception {
 	}
 	
+	/**
+	 * Testen der korrekten Erzeugung von Class A
+	 * mit seiner Abhaengigkeit zu Class B
+	 * und der Eigenschaft name
+	 */
 	@Test
 	public void testA() {
 		assertTrue(a instanceof A);
