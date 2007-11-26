@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<project name="crm-container" basedir="." default="build">
+
+     
+    <path id="project.classpath">
+        <fileset dir="lib">
+          <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="bin"/>
+    </path>
+
+    <target name="clean">
+        <delete>
+            <fileset dir="bin" includes="**/*.class"/>
+        </delete>
+    </target>
+
+    <target name="prepare">
+	    <mkdir dir="build"/>
+	</target>
+	
+	
+	<target name="compile">
+        <echo message="Compile..."/>
+        <javac srcdir="src" destdir="bin" classpathref="project.classpath" debug="true" />
+     </target>
+
+
+	<target name="build" depends="prepare,compile">
+ 
+        <echo message="Building JAR  ..."/>
+		<jar jarfile="build/crm-container.jar" compress="true">
+            <fileset dir="bin" >
+                <exclude name="**/.svn"/>
+            </fileset>
+        </jar>
+    </target>
+	
+   
+</project>
