@@ -52,13 +52,20 @@ public class CrmContainerTest {
 		assertTrue(b.isStarted());
 	}
 
+	
+	enum TestEnum { EINS, ZWEI }
+	
 	/**
 	 * Test das Binden und holen von Konstanten
 	 */
 	@Test
 	public void testBindConstant() {
 		crmContainer.bind("key1", "value1");
+		crmContainer.bind(TestEnum.EINS, new Integer(1));
+		crmContainer.bind(TestEnum.ZWEI, new Integer(2));
 		assertEquals("value1", crmContainer.getInstance("key1"));
+		assertEquals(1, ((Integer)crmContainer.getInstance(TestEnum.EINS)).intValue() );
+		assertEquals(2, ((Integer)crmContainer.getInstance(TestEnum.ZWEI)).intValue() );
 	}
 
 	/**
