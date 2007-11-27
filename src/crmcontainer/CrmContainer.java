@@ -24,12 +24,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CrmContainer {
 	
 	/** 
-	 * Map mit
-	 * InterfaceKlasse als Key und
-	 * als Values die gewueschte Implementierungsklasse 
+	 * Map mit der zum jweiligen key
+	 * gewueschten Implementierungsklasse 
 	 * 
 	 */
-	private final Map<Class, Class> implMap;
+	private final Map<Object, Class> implMap;
 	
 	/**
 	 * Map mit den schon erzeugten konkreten Instancen
@@ -48,23 +47,23 @@ public class CrmContainer {
 	
 
 	/**
-	 * Erzeugt einen Ioc-Container mit default Einstellungen
+	 * Erzeugt einen IoC-Container mit default Einstellungen
 	 *
 	 */
 	public CrmContainer() {
 		super();
-		 implMap = new HashMap<Class, Class>();
+		 implMap = new HashMap<Object, Class>();
 		 instanceMap = new HashMap<Object, Object>();
 	}
 
 	/**
-	 * Erzeugt einen Ioc-Container
+	 * Erzeugt einen IoC-Container
 	 *
 	 * @param initialCapacity Initial-Groesse der internen HashMap fuer Klassen/Instancen
 	 */
 	public CrmContainer(int initialCapacity) {
 		super();
-		 implMap = new HashMap<Class, Class>(initialCapacity);
+		 implMap = new HashMap<Object, Class>(initialCapacity);
 		 instanceMap = new HashMap<Object, Object>(initialCapacity);
 	}
 
@@ -76,6 +75,18 @@ public class CrmContainer {
 	 * @param impl zugehoerige Implementierungsklasse
 	 */
 	public <T>void bind(Class<T> key, Class<? extends T> impl) {
+		if(implMap.containsKey(key) || instanceMap.containsKey(key))
+			throw new DuplicateBindException(key);
+		implMap.put(key, impl);
+	}
+	
+	/**
+	 * Binden  einer Implementierungs-Klasse per Object-Key
+	 *
+	 * @param key  zum Auffinden der Implementierung
+	 * @param impl zugehoerige Implementierungsklasse
+	 */
+	public void bind(Object key, Class impl) {
 		if(implMap.containsKey(key) || instanceMap.containsKey(key))
 			throw new DuplicateBindException(key);
 		implMap.put(key, impl);
@@ -94,11 +105,12 @@ public class CrmContainer {
 	
 	/**
 	 * Binden einer schon existieren konkreten Object-Instance unter eine Key.
-	 * Hauptsaechlich dazu gedacht um Konstanten u binden z.B.;
-	 * 
+	 * Hauptsaechlich dazu gedacht um Konstanten u.a. zu binden z.B.;
+	 * <code>
 	 *   bind("PATH_TMP", "/tmp");
 	 *   bind(TIMEOUT, new Integer(200));
-	 *
+	 * </code>
+	 * 
 	 * @param key Key unter dem die Instance zu finden ist, darf nicht schon vergeben sein
 	 * @param instance zu bindende konkrete Instance
 	 */
@@ -116,28 +128,54 @@ public class CrmContainer {
 	 * @return
 	 */
 	public Object getInstance(Object key) {
-		Object service = instanceMap.get(key);
-		if (service!=null)
-			return service;
-		throw new ServiceNotBoundException(key);
+		Object instance = instanceMap.get(key);
+		if (instance!=null)
+			return instance;
+		
+		return getOrCreateInstance(key, 0);
 	}
 	
+	/**
+	 * liefert zur angegebenen Interface-Klasse 
+	 * eine Instance der zugehoerigen Implementierung.
+	 * wobei die Interface-Klasse auch die Implementierungsklasse sein darf,
+	 * wenn z.B. dies kein Inteface hat.
+	 *
+	 * @param <T> Type der Interface-Klasse
+	 * @param key die Klasse als Key fuer die zugehoerige Instance
+	 * @return
+	 */
 	public <T> T getInstance(Class <T> key) {
+		T instance = (T) getOrCreateInstance(key, 0);
+		return instance;
+	}
+	
+	/**
+	 * liefert oder wenn nicht vorhanden
+	 * erzeugt Instance-Object zum angegebenen key
+	 *
+	 * @param key
+	 * @return
+	 */
+	private Object getOrCreateInstance(Object key, int level) {
 		mapLock.lock();
-		T service = (T) instanceMap.get(key);
+		Object service = instanceMap.get(key);
 		if (service!=null) {
+			//	 es gibt also schon eine Instance zu dem key, dann also fertig
 			mapLock.unlock();
-			return service;
+			return service;	
 		}
 		
-		Class<T> implClass = implMap.get(key);
+		Class implClass = implMap.get(key);
 		if (implClass==null) {
+			// es existiert fuer diesen key keine Implementierungsklasse,
+			// raus mit Exception
 			mapLock.unlock();
 			throw new ServiceNotBoundException(key);
 		}
 		
 		try {
-			service = (T) createInstance(key, implClass);
+			service = createInstance(key, implClass, level);
 		} catch (Exception e) {
 			throw new ServiceCreationException(key, e);
 		} finally {
@@ -145,16 +183,24 @@ public class CrmContainer {
 		}
 		return service;
 	}
-	
 
-	private <T>T createInstance(Class <T> key, Class<? extends T> clazz) throws Exception {
-		if (monitor!=null) 	monitor.log("Creating service "+key+" with implementation "+ clazz);
+	/**
+	 * erzeugt zum angebenen Key eine konkrete Instance
+	 *
+	 * @param key
+	 * @param clazz
+	 * @param level Aufruf-Level (nur fuer Monitorzwecke)
+	 * @return
+	 * @throws Exception
+	 */
+	private Object createInstance(Object  key, Class clazz, int level) throws Exception {
+		if (monitor!=null) 	monitor.log(levelPrefix(level)+"Creating instance for key="+key+" with implementation "+ clazz);
 			
-		Constructor<? extends T> constr = clazz.getConstructor();
-		T instance = constr.newInstance();
+		Constructor constr = clazz.getConstructor();
+		Object instance = constr.newInstance();
 		instanceMap.put(key, instance);
 
-		injectDependencies(instance);
+		injectDependencies(instance, level);
 		if (instance instanceof Startable) {
 			Startable startable = (Startable) instance;
 			if (monitor!=null) 	monitor.log("Call start on "+key);
@@ -163,7 +209,15 @@ public class CrmContainer {
 		return instance;
 	}
 	
-	private void injectDependencies(Object instance) throws Exception {
+	/**
+	 * Injecten aller Abhaengikeiten (Setter), die durch die
+	 * Annotation @Inject markiert sind
+	 *
+	 * @param instance
+	 * @param level Aufruf-Level (nur fuer Monitorzwecke)
+	 * @throws Exception
+	 */
+	private void injectDependencies(Object instance, int level) throws Exception {
 		Class clazz = instance.getClass();
 		for (Method method : clazz.getMethods()) {
 			Inject anno = method.getAnnotation(Inject.class);
@@ -176,19 +230,27 @@ public class CrmContainer {
 			Class<?> paraClass = parameterTypes[0];
 			Object param;
 			String annoValue = anno.value();
+			++level;
 			if (annoValue.length()>0) {
-				if (monitor!=null) 	monitor.log("Injecting dependencies: "+annoValue);
-				param = getInstance(annoValue);
+				if (monitor!=null) 	monitor.log(levelPrefix(level)+"Injecting dependencies: "+annoValue);
+				param = getOrCreateInstance(annoValue, level);
 				if (param==null)
 					throw new ServiceCreationException(annoValue);
 			} else {
-				if (monitor!=null) 	monitor.log("Injecting dependencies: "+paraClass);
-				param = getInstance(paraClass);
+				if (monitor!=null) 	monitor.log(levelPrefix(level)+"Injecting dependencies: "+paraClass);
+				param = getOrCreateInstance(paraClass, level);
 				if (param==null)
 					throw new ServiceCreationException(paraClass);
 			}
 			method.invoke(instance, new Object[] {param});
 		}
+	}
+
+	private String levelPrefix(int level) {
+		StringBuffer sb = new StringBuffer();
+		while(--level>=0) sb.append("-");
+			
+		return "#"+sb+"# ";
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package crmcontainer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -52,6 +52,19 @@ public class CrmContainerTest {
 		assertTrue(b.isStarted());
 	}
 
+	
+	/**
+	 * Testen des Bindens eines Klasse unter einem
+	 * Object-Key
+	 *
+	 */
+	@Test
+	public void testBindClassWithObjectAsKey() {
+		crmContainer.bind("other-a-instance", A.class);
+		A a2 = (A) crmContainer.getInstance("other-a-instance");
+		assertTrue(a2 instanceof A);
+		assertNotSame(a2, a);
+	}
 	
 	enum TestEnum { EINS, ZWEI }
 	
