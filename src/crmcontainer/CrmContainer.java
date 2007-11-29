@@ -74,7 +74,7 @@ public class CrmContainer {
 	 * @param key Interface-Klasse, wird Key zum Auffinden der Implementierung
 	 * @param impl zugehoerige Implementierungsklasse
 	 */
-	public <T>void bind(Class<T> key, Class<? extends T> impl) {
+	public <T>void bind(Class<T> key, Class impl) {
 		if(implMap.containsKey(key) || instanceMap.containsKey(key))
 			throw new DuplicateBindException(key);
 		implMap.put(key, impl);
@@ -130,11 +130,29 @@ public class CrmContainer {
 	public Object getInstance(Object key) {
 		Object instance = instanceMap.get(key);
 		if (instance!=null)
-			return instance;
+			return checkProviding(instance);
 		
 		return getOrCreateInstance(key, 0);
 	}
 	
+	/**
+	 * Pruefen ob Instance das Interface Provider implementiert.
+	 * Dann wird get auf der Instance aufgerufen und dieses Object
+	 * geliefert
+	 *
+	 * @param instance
+	 * @return
+	 */
+	private Object checkProviding(Object instance) {
+		if (instance instanceof Provider) {
+			Provider provider = (Provider) instance;
+			Object object = provider.get();
+			if(monitor!=null) monitor.log(instance.getClass()+" is a provider, method get called and returnd "+object.getClass());
+			return object;
+		}
+		return instance;
+	}
+
 	/**
 	 * liefert zur angegebenen Interface-Klasse 
 	 * eine Instance der zugehoerigen Implementierung.
@@ -159,11 +177,11 @@ public class CrmContainer {
 	 */
 	private Object getOrCreateInstance(Object key, int level) {
 		mapLock.lock();
-		Object service = instanceMap.get(key);
-		if (service!=null) {
+		Object instance = instanceMap.get(key);
+		if (instance!=null) {
 			//	 es gibt also schon eine Instance zu dem key, dann also fertig
 			mapLock.unlock();
-			return service;	
+			return checkProviding(instance);	
 		}
 		
 		Class implClass = implMap.get(key);
@@ -175,13 +193,13 @@ public class CrmContainer {
 		}
 		
 		try {
-			service = createInstance(key, implClass, level);
+			instance = createInstance(key, implClass, level);
 		} catch (Exception e) {
 			throw new ServiceCreationException(key, e);
 		} finally {
 			mapLock.unlock();
 		}
-		return service;
+		return checkProviding(instance);
 	}
 
 	/**

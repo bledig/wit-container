@@ -1,14 +1,18 @@
 package crmcontainer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import crmcontainer.sample.A;
 import crmcontainer.sample.B;
+import crmcontainer.sample.C;
+import crmcontainer.sample.SampleStringProvider;
+import crmcontainer.sample.SimpleClass;
+import crmcontainer.sample.SampleSimpleClassProvider;
 
 public class CrmContainerTest {
 
@@ -20,13 +24,18 @@ public class CrmContainerTest {
 	@Before
 	public void setUp() throws Exception {
 		crmContainer = new CrmContainer();
-		crmContainer.setMonitor(new ConsoleMonitor());
-		crmContainer.bind(A.class);
-		crmContainer.bind(B.class);
-		crmContainer.bind("db_name", "db1");
+		bindClasses();
 		
 		a = crmContainer.getInstance(A.class);
 		b = crmContainer.getInstance(B.class);
+	}
+
+	private void bindClasses() {
+		crmContainer.setMonitor(new ConsoleMonitor());
+		crmContainer.bind(A.class);
+		crmContainer.bind(B.class);
+		crmContainer.bind(C.class);
+		crmContainer.bind("db_name", "db1");
 	}
 	
 	/**
@@ -42,14 +51,21 @@ public class CrmContainerTest {
 	}
 
 	/**
-	 * Testen der korrekten Erzeugung von Class B
-	 * mit seiner Abhaengigkeit zu Class A
+	 * Testen der korrekten Erzeugung von Class B mit
+	 * - seiner Abhaengigkeit zu Class A
+	 * - seiner Abhaengikeit zu Classe C
+	 * - Methode start aufgerufen wurde
+	 * - Methode Start der Instance von Classe C aufgerufen wurde
+	 * 
 	 */
 	@Test
 	public void testB() {
 		assertTrue(b instanceof B);
 		assertEquals(b.getA(), a);
-		assertTrue(b.isStarted());
+		assertTrue("b.start not called!",b.isStarted());
+		C c = b.getC();
+		assertNotNull(c);
+		assertTrue("c.start not called!", c.isStarted());
 	}
 
 	
@@ -114,38 +130,63 @@ public class CrmContainerTest {
 	}
 	
 
+	/**
+	 * Testen der Provider-Funktionalitaet,
+	 * d.h. der Container muss bei einer Implementierungsklasse, die das Interface Provider
+	 * implementiert, nicht die Klasse selbst sondern ein Object der zu prividenden Klasse liefern
+	 * (also ein get auf dieser Klasse aufrufen)
+	 *
+	 */
+	@Test
+	public void testProvider() {
+		System.out.println("=== testProvider ===");
+		crmContainer.bind("message", SampleStringProvider.class);
+		crmContainer.bind(SimpleClass.class, SampleSimpleClassProvider.class);
+
+		SimpleClass o = crmContainer.getInstance(SimpleClass.class); 
+		assertNotNull("SimpleClass-Instance is null! ", o);
+		String s = o.getMsg();
+		assertEquals("instance by provider", s);
+		
+		SimpleClass o2 = crmContainer.getInstance(SimpleClass.class);
+		assertEquals(o, o2);
+	}
+	
+	
+	@Test
+	public void testThreadSafeGetInstance() {
+		//TODO
+	}
+	
 	
 	@Test
 	public void testRuntime() {
 		long time = System.currentTimeMillis();
-		CrmContainer container = new CrmContainer();
-		container.bind(A.class);
-		container.bind(B.class);
-		container.bind("db_name", "db1");
+		crmContainer = new CrmContainer();
+		bindClasses();
 		for(int i=1; i< 4500; i++) {
-			container.bind("key"+i, "xxx");
+			crmContainer.bind("key"+i, "xxx");
 		}
 		time = printRunTime(time);
 		
-		a = container.getInstance(A.class);
-		b = container.getInstance(B.class);
+		a = crmContainer.getInstance(A.class);
+		b = crmContainer.getInstance(B.class);
 		time = printRunTime(time);
 	}
 
+	
 	@Test
 	public void testRuntimeWithInitialCapa() {
 		long time = System.currentTimeMillis();
-		CrmContainer container = new CrmContainer(5000);
-		container.bind(A.class);
-		container.bind(B.class);
-		container.bind("db_name", "db1");
+		crmContainer = new CrmContainer(5000);
+		bindClasses();
 		for(int i=1; i< 4500; i++) {
-			container.bind("key"+i, "xxx");
+			crmContainer.bind("key"+i, "xxx");
 		}
 		time = printRunTime(time);
 		
-		a = container.getInstance(A.class);
-		b = container.getInstance(B.class);
+		a = crmContainer.getInstance(A.class);
+		b = crmContainer.getInstance(B.class);
 		time = printRunTime(time);
 	}
 
@@ -156,9 +197,5 @@ public class CrmContainerTest {
 		return currentTime;
 	}
 	
-	
-	@Test
-	public void testThreadSafeGetInstance() {
-		//TODO
-	}
+
 }
