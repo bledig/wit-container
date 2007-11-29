@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 public class ServiceCreationException extends RuntimeException {
 
 	public ServiceCreationException(Object key, Exception e) {
-		super("Internal Error in creation of instance "+key+":"+e.getMessage(), e);
+		super("Internal Error in creation of instance for key="+key, e);
 	}
 
 	public ServiceCreationException(Class<?> name) {
@@ -22,8 +22,8 @@ public class ServiceCreationException extends RuntimeException {
 		super("Internal Error creation of instance "+clazz+" Method "+method.getName()+" expects not one Parameter.");
 	}
 
-	public ServiceCreationException(String string) {
-		super("Internal Error in creation of instance "+string);
+	public ServiceCreationException(Object key, String string) {
+		super("Internal Error by creation of instance for key="+key+": "+string);
 	}
 
 }

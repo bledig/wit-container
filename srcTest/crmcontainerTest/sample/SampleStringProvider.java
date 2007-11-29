@@ -1,4 +1,4 @@
-package crmcontainer.sample;
+package crmcontainerTest.sample;
 
 import crmcontainer.Provider;
 

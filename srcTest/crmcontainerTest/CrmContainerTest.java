@@ -1,4 +1,4 @@
-package crmcontainer;
+package crmcontainerTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -7,12 +7,15 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import crmcontainer.sample.A;
-import crmcontainer.sample.B;
-import crmcontainer.sample.C;
-import crmcontainer.sample.SampleStringProvider;
-import crmcontainer.sample.SimpleClass;
-import crmcontainer.sample.SampleSimpleClassProvider;
+import crmcontainer.ConsoleMonitor;
+import crmcontainer.CrmContainer;
+import crmcontainer.DuplicateBindException;
+import crmcontainerTest.sample.A;
+import crmcontainerTest.sample.B;
+import crmcontainerTest.sample.C;
+import crmcontainerTest.sample.SampleSimpleClassProvider;
+import crmcontainerTest.sample.SampleStringProvider;
+import crmcontainerTest.sample.SimpleClass;
 
 public class CrmContainerTest {
 
@@ -35,7 +38,7 @@ public class CrmContainerTest {
 		crmContainer.bind(A.class);
 		crmContainer.bind(B.class);
 		crmContainer.bind(C.class);
-		crmContainer.bind("db_name", "db1");
+		crmContainer.bind("db_name").to("db1");
 	}
 	
 	/**
@@ -76,7 +79,7 @@ public class CrmContainerTest {
 	 */
 	@Test
 	public void testBindClassWithObjectAsKey() {
-		crmContainer.bind("other-a-instance", A.class);
+		crmContainer.bind("other-a-instance").to(A.class);
 		A a2 = (A) crmContainer.getInstance("other-a-instance");
 		assertTrue(a2 instanceof A);
 		assertNotSame(a2, a);
@@ -89,9 +92,9 @@ public class CrmContainerTest {
 	 */
 	@Test
 	public void testBindConstant() {
-		crmContainer.bind("key1", "value1");
-		crmContainer.bind(TestEnum.EINS, new Integer(1));
-		crmContainer.bind(TestEnum.ZWEI, new Integer(2));
+		crmContainer.bind("key1").to("value1");
+		crmContainer.bind(TestEnum.EINS).to(new Integer(1));
+		crmContainer.bind(TestEnum.ZWEI).to(new Integer(2));
 		assertEquals("value1", crmContainer.getInstance("key1"));
 		assertEquals(1, ((Integer)crmContainer.getInstance(TestEnum.EINS)).intValue() );
 		assertEquals(2, ((Integer)crmContainer.getInstance(TestEnum.ZWEI)).intValue() );
@@ -103,10 +106,10 @@ public class CrmContainerTest {
 	 */
 	@Test
 	public void testBindConstantDuplicate() {
-		crmContainer.bind("key1", "value1");
+		crmContainer.bind("key1").to("value1");
 		boolean throwException = false;
 		try {
-			crmContainer.bind("key1", "value2");
+			crmContainer.bind("key1").to("value2");
 		} catch (DuplicateBindException e) {
 			throwException = true;
 		}
@@ -140,8 +143,11 @@ public class CrmContainerTest {
 	@Test
 	public void testProvider() {
 		System.out.println("=== testProvider ===");
-		crmContainer.bind("message", SampleStringProvider.class);
-		crmContainer.bind(SimpleClass.class, SampleSimpleClassProvider.class);
+		crmContainer.bind(SampleStringProvider.class);
+		crmContainer.bind(SampleSimpleClassProvider.class);
+		
+		crmContainer.bind("message").toProvider(SampleStringProvider.class);
+		crmContainer.bind(SimpleClass.class).toProvider(SampleSimpleClassProvider.class);
 
 		SimpleClass o = crmContainer.getInstance(SimpleClass.class); 
 		assertNotNull("SimpleClass-Instance is null! ", o);
@@ -161,11 +167,12 @@ public class CrmContainerTest {
 	
 	@Test
 	public void testRuntime() {
+		System.out.println("\n=== testRuntime ===");
 		long time = System.currentTimeMillis();
 		crmContainer = new CrmContainer();
 		bindClasses();
 		for(int i=1; i< 4500; i++) {
-			crmContainer.bind("key"+i, "xxx");
+			crmContainer.bind("key"+i).to("xxx");
 		}
 		time = printRunTime(time);
 		
@@ -177,11 +184,12 @@ public class CrmContainerTest {
 	
 	@Test
 	public void testRuntimeWithInitialCapa() {
+		System.out.println("\n=== testRuntimeWithInitialCapa ===");
 		long time = System.currentTimeMillis();
 		crmContainer = new CrmContainer(5000);
 		bindClasses();
 		for(int i=1; i< 4500; i++) {
-			crmContainer.bind("key"+i, "xxx");
+			crmContainer.bind("key"+i).to("xxx");
 		}
 		time = printRunTime(time);
 		
