@@ -1,6 +1,5 @@
 package crmcontainerTest.sample;
 
-import crmcontainer.Inject;
 import crmcontainer.Startable;
 
 public class C implements Startable {

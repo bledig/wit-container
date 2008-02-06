@@ -11,6 +11,7 @@ import crmcontainer.ConsoleMonitor;
 import crmcontainer.CrmContainer;
 import crmcontainer.DuplicateBindException;
 import crmcontainerTest.sample.A;
+import crmcontainerTest.sample.AExtended;
 import crmcontainerTest.sample.B;
 import crmcontainerTest.sample.C;
 import crmcontainerTest.sample.SampleSimpleClassProvider;
@@ -156,6 +157,14 @@ public class CrmContainerTest {
 		
 		SimpleClass o2 = crmContainer.getInstance(SimpleClass.class);
 		assertEquals(o, o2);
+	}
+	
+	@Test
+	public void testInjectionOverExtendedClass() {
+		crmContainer.bind(AExtended.class);
+		
+		AExtended a = crmContainer.getInstance(AExtended.class);
+		assertNotNull(a.getB());
 	}
 	
 	

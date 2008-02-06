@@ -8,10 +8,11 @@ import java.lang.reflect.Method;
  * @author Bernd Ledig
  *
  */
+@SuppressWarnings("serial")
 public class ServiceCreationException extends RuntimeException {
 
 	public ServiceCreationException(Object key, Exception e) {
-		super("Internal Error in creation of instance for key="+key, e);
+		super(e.getMessage()+" : Internal Error in creation of instance for key="+key, e);
 	}
 
 	public ServiceCreationException(Class<?> name) {

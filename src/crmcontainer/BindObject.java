@@ -1,9 +1,7 @@
 package crmcontainer;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -29,7 +27,7 @@ public class BindObject {
 	/**
 	 * Lock fuer das thread-sichere Erzeugen der Instancen 
 	 */
-	private final Lock mapLock = new ReentrantLock();
+	private final Lock createLock = new ReentrantLock();
 	
 	
 	/**
@@ -87,7 +85,7 @@ public class BindObject {
 			// es existiert fuer diesen key keine Implementierungsklasse, raus mit Exception
 			throw new ServiceCreationException(key, " no Implementation-Class");
 		}
-		mapLock.lock();
+		createLock.lock();
 		try {
 
 			if (monitor != null)
@@ -107,7 +105,7 @@ public class BindObject {
 		} catch (Exception e) {
 			throw new ServiceCreationException(key, e);
 		} finally {
-			mapLock.unlock();
+			createLock.unlock();
 		}
 	}
 

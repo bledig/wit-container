@@ -1,11 +1,7 @@
 package crmcontainer;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Sehr schnelle und minimalistische IoC -Container-Implementierung
@@ -72,6 +68,7 @@ public class CrmContainer {
 	 * 
 	 * @param implClass zugehoerige Implementierungsklasse, wird gleichzeitig Key zum Auffinden der Implementierung
 	 */
+	@SuppressWarnings("unchecked")
 	public BindObject bind(Class implClass) {
 		BindObject bindObject = bind((Object) implClass);
 		bindObject.to(implClass);
@@ -100,6 +97,7 @@ public class CrmContainer {
 	 * @param key die Klasse als Key fuer die zugehoerige Instance
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> T getInstance(Class <T> key) {
 		T instance = (T) getInstance((Object) key);
 		return instance;
