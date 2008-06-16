@@ -52,7 +52,7 @@ public class B implements Startable {
 	/**
 	 * @param c the c to set
 	 */
-	@Inject
+	@Inject(optional=true)
 	public void setC(C c) {
 		this.c = c;
 	}

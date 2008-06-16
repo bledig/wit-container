@@ -134,10 +134,15 @@ public class BindObject {
 			Object key = (annoValue.length()>0) ? annoValue : paraClass; 
 			
 			if (monitor!=null) 	monitor.log(levelPrefix(level)+"Injecting dependencies: "+key);
-			param = crmContainer.getInstance(key, level);
-			if (param==null)
+			try {
+				param = crmContainer.getInstance(key, level);
+			} catch (RuntimeException e) { param = null; }
+			
+			if (param!=null) {
+				method.invoke(instance, new Object[] {param});
+			} else if (!anno.optional()) {
 				throw new ServiceCreationException(key, "no Instance found for Injection, key="+key);
-			method.invoke(instance, new Object[] {param});
+			}
 		}
 	}
 

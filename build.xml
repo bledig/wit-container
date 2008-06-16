@@ -30,7 +30,7 @@
 	<target name="build" depends="prepare,compile">
  
         <echo message="Building JAR  ..."/>
-		<jar jarfile="build/crm-container.jar" compress="true">
+		<jar jarfile="build/crm-container-1.0.jar" compress="true">
             <fileset dir="bin" >
                 <exclude name="**/.svn"/>
             </fileset>
