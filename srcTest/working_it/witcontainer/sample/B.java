@@ -1,7 +1,7 @@
-package witcontainer.sample;
+package working_it.witcontainer.sample;
 
-import witcontainer.Inject;
-import witcontainer.Startable;
+import working_it.witcontainer.Inject;
+import working_it.witcontainer.Startable;
 
 public class B implements Startable {
 

@@ -1,6 +1,6 @@
-package witcontainer.sample;
+package working_it.witcontainer.sample;
 
-import witcontainer.Startable;
+import working_it.witcontainer.Startable;
 
 public class C implements Startable {
 

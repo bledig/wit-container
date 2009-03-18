@@ -1,4 +1,4 @@
-package witcontainer.sample;
+package working_it.witcontainer.sample;
 
 public class SimpleClass {
 

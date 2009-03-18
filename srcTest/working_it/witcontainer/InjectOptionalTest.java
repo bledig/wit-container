@@ -1,4 +1,4 @@
-package witcontainer;
+package working_it.witcontainer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -7,16 +7,16 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import witcontainer.ConsoleMonitor;
-import witcontainer.WitContainer;
-import witcontainer.DuplicateBindException;
-import witcontainer.sample.A;
-import witcontainer.sample.AExtended;
-import witcontainer.sample.B;
-import witcontainer.sample.C;
-import witcontainer.sample.SampleSimpleClassProvider;
-import witcontainer.sample.SampleStringProvider;
-import witcontainer.sample.SimpleClass;
+import working_it.witcontainer.ConsoleMonitor;
+import working_it.witcontainer.DuplicateBindException;
+import working_it.witcontainer.WitContainer;
+import working_it.witcontainer.sample.A;
+import working_it.witcontainer.sample.AExtended;
+import working_it.witcontainer.sample.B;
+import working_it.witcontainer.sample.C;
+import working_it.witcontainer.sample.SampleSimpleClassProvider;
+import working_it.witcontainer.sample.SampleStringProvider;
+import working_it.witcontainer.sample.SimpleClass;
 
 
 public class InjectOptionalTest {

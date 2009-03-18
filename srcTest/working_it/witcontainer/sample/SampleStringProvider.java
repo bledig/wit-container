@@ -1,6 +1,6 @@
-package witcontainer.sample;
+package working_it.witcontainer.sample;
 
-import witcontainer.Provider;
+import working_it.witcontainer.Provider;
 
 public class SampleStringProvider implements Provider<String> {
 
