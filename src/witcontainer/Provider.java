@@ -1,4 +1,4 @@
-package crmcontainer;
+package witcontainer;
 
 /**
  * Interface fuer Implementierungs-Klassen,

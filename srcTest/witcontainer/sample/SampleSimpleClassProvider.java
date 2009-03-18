@@ -1,7 +1,7 @@
-package crmcontainerTest.sample;
+package witcontainer.sample;
 
-import crmcontainer.Inject;
-import crmcontainer.Provider;
+import witcontainer.Inject;
+import witcontainer.Provider;
 
 public class SampleSimpleClassProvider implements Provider<SimpleClass> {
 

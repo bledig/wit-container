@@ -1,6 +1,6 @@
-package crmcontainerTest.sample;
+package witcontainer.sample;
 
-import crmcontainer.Provider;
+import witcontainer.Provider;
 
 public class SampleStringProvider implements Provider<String> {
 

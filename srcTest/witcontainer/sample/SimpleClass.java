@@ -1,4 +1,4 @@
-package crmcontainerTest.sample;
+package witcontainer.sample;
 
 public class SimpleClass {
 

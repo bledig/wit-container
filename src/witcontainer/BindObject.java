@@ -1,4 +1,4 @@
-package crmcontainer;
+package witcontainer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class BindObject {
 
 	private final Monitor monitor;
-	private final CrmContainer crmContainer;
+	private final WitContainer crmContainer;
 	
 	private final Object key;
 	
@@ -36,7 +36,7 @@ public class BindObject {
 	 * @param key key, unter dem dieses BindObject im bindOjectSpace abgeleget ist 
 	 * @param crmContainer der uebergeordnete CrmContainer
 	 */
-	public BindObject(Object key, CrmContainer crmContainer) {
+	public BindObject(Object key, WitContainer crmContainer) {
 		super();
 		this.key = key;
 		this.crmContainer = crmContainer;
@@ -72,6 +72,7 @@ public class BindObject {
 		return instance;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void createInstance(int level) {
 		
 		// Sonderfall Provider 

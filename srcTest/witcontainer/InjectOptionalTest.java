@@ -1,4 +1,4 @@
-package crmcontainerTest;
+package witcontainer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -7,27 +7,29 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import crmcontainer.ConsoleMonitor;
-import crmcontainer.CrmContainer;
-import crmcontainer.DuplicateBindException;
-import crmcontainerTest.sample.A;
-import crmcontainerTest.sample.AExtended;
-import crmcontainerTest.sample.B;
-import crmcontainerTest.sample.C;
-import crmcontainerTest.sample.SampleSimpleClassProvider;
-import crmcontainerTest.sample.SampleStringProvider;
-import crmcontainerTest.sample.SimpleClass;
+import witcontainer.ConsoleMonitor;
+import witcontainer.WitContainer;
+import witcontainer.DuplicateBindException;
+import witcontainer.sample.A;
+import witcontainer.sample.AExtended;
+import witcontainer.sample.B;
+import witcontainer.sample.C;
+import witcontainer.sample.SampleSimpleClassProvider;
+import witcontainer.sample.SampleStringProvider;
+import witcontainer.sample.SimpleClass;
+
 
 public class InjectOptionalTest {
 
-	private static CrmContainer crmContainer;
+	private static WitContainer crmContainer;
+	@SuppressWarnings("unused")
 	private static A a;
 	private static B b;
 
 
 	@Before
 	public void setUp() throws Exception {
-		crmContainer = new CrmContainer();
+		crmContainer = new WitContainer();
 		crmContainer.setMonitor(new ConsoleMonitor());
 		crmContainer.bind(A.class);
 		crmContainer.bind(B.class);

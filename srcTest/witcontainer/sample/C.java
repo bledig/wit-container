@@ -1,6 +1,6 @@
-package crmcontainerTest.sample;
+package witcontainer.sample;
 
-import crmcontainer.Startable;
+import witcontainer.Startable;
 
 public class C implements Startable {
 

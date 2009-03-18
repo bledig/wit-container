@@ -1,6 +1,6 @@
-package crmcontainerTest.sample;
+package witcontainer.sample;
 
-import crmcontainer.Inject;
+import witcontainer.Inject;
 
 public class A {
 

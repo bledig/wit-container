@@ -1,4 +1,4 @@
-package crmcontainer;
+package witcontainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
  * @author Bernd Ledig, Thorsten Fehre
  *
  */
-public class CrmContainer {
+public class WitContainer {
 	
 	/**  Map mit den BindObjects   */
 	private final Map<Object, BindObject> bindObjects;
@@ -34,7 +34,7 @@ public class CrmContainer {
 	 * Erzeugt einen IoC-Container mit default Einstellungen
 	 *
 	 */
-	public CrmContainer() {
+	public WitContainer() {
 		super();
 		bindObjects = new HashMap<Object, BindObject>();
 	}
@@ -44,7 +44,7 @@ public class CrmContainer {
 	 *
 	 * @param initialCapacity Initial-Groesse der internen HashMap fuer Klassen/Instancen
 	 */
-	public CrmContainer(int initialCapacity) {
+	public WitContainer(int initialCapacity) {
 		super();
 		bindObjects = new HashMap<Object, BindObject>(initialCapacity);
 	}

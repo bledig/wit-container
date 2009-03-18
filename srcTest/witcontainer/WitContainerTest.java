@@ -1,4 +1,4 @@
-package crmcontainerTest;
+package witcontainer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -7,39 +7,40 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import crmcontainer.ConsoleMonitor;
-import crmcontainer.CrmContainer;
-import crmcontainer.DuplicateBindException;
-import crmcontainerTest.sample.A;
-import crmcontainerTest.sample.AExtended;
-import crmcontainerTest.sample.B;
-import crmcontainerTest.sample.C;
-import crmcontainerTest.sample.SampleSimpleClassProvider;
-import crmcontainerTest.sample.SampleStringProvider;
-import crmcontainerTest.sample.SimpleClass;
+import witcontainer.ConsoleMonitor;
+import witcontainer.WitContainer;
+import witcontainer.DuplicateBindException;
+import witcontainer.sample.A;
+import witcontainer.sample.AExtended;
+import witcontainer.sample.B;
+import witcontainer.sample.C;
+import witcontainer.sample.SampleSimpleClassProvider;
+import witcontainer.sample.SampleStringProvider;
+import witcontainer.sample.SimpleClass;
 
-public class CrmContainerTest {
 
-	private static CrmContainer crmContainer;
+public class WitContainerTest {
+
+	private static WitContainer witContainer;
 	private static A a;
 	private static B b;
 
 
 	@Before
 	public void setUp() throws Exception {
-		crmContainer = new CrmContainer();
+		witContainer = new WitContainer();
 		bindClasses();
 		
-		a = crmContainer.getInstance(A.class);
-		b = crmContainer.getInstance(B.class);
+		a = witContainer.getInstance(A.class);
+		b = witContainer.getInstance(B.class);
 	}
 
 	private void bindClasses() {
-		crmContainer.setMonitor(new ConsoleMonitor());
-		crmContainer.bind(A.class);
-		crmContainer.bind(B.class);
-		crmContainer.bind(C.class);
-		crmContainer.bind("db_name").to("db1");
+		witContainer.setMonitor(new ConsoleMonitor());
+		witContainer.bind(A.class);
+		witContainer.bind(B.class);
+		witContainer.bind(C.class);
+		witContainer.bind("db_name").to("db1");
 	}
 	
 	/**
@@ -80,8 +81,8 @@ public class CrmContainerTest {
 	 */
 	@Test
 	public void testBindClassWithObjectAsKey() {
-		crmContainer.bind("other-a-instance").to(A.class);
-		A a2 = (A) crmContainer.getInstance("other-a-instance");
+		witContainer.bind("other-a-instance").to(A.class);
+		A a2 = (A) witContainer.getInstance("other-a-instance");
 		assertTrue(a2 instanceof A);
 		assertNotSame(a2, a);
 	}
@@ -93,12 +94,12 @@ public class CrmContainerTest {
 	 */
 	@Test
 	public void testBindConstant() {
-		crmContainer.bind("key1").to("value1");
-		crmContainer.bind(TestEnum.EINS).to(new Integer(1));
-		crmContainer.bind(TestEnum.ZWEI).to(new Integer(2));
-		assertEquals("value1", crmContainer.getInstance("key1"));
-		assertEquals(1, ((Integer)crmContainer.getInstance(TestEnum.EINS)).intValue() );
-		assertEquals(2, ((Integer)crmContainer.getInstance(TestEnum.ZWEI)).intValue() );
+		witContainer.bind("key1").to("value1");
+		witContainer.bind(TestEnum.EINS).to(new Integer(1));
+		witContainer.bind(TestEnum.ZWEI).to(new Integer(2));
+		assertEquals("value1", witContainer.getInstance("key1"));
+		assertEquals(1, ((Integer)witContainer.getInstance(TestEnum.EINS)).intValue() );
+		assertEquals(2, ((Integer)witContainer.getInstance(TestEnum.ZWEI)).intValue() );
 	}
 
 	/**
@@ -107,10 +108,10 @@ public class CrmContainerTest {
 	 */
 	@Test
 	public void testBindConstantDuplicate() {
-		crmContainer.bind("key1").to("value1");
+		witContainer.bind("key1").to("value1");
 		boolean throwException = false;
 		try {
-			crmContainer.bind("key1").to("value2");
+			witContainer.bind("key1").to("value2");
 		} catch (DuplicateBindException e) {
 			throwException = true;
 		}
@@ -126,7 +127,7 @@ public class CrmContainerTest {
 	public void testBindClassDuplicate() {
 		boolean throwException = false;
 		try {
-			crmContainer.bind(A.class);
+			witContainer.bind(A.class);
 		} catch (DuplicateBindException e) {
 			throwException = true;
 		}
@@ -144,26 +145,26 @@ public class CrmContainerTest {
 	@Test
 	public void testProvider() {
 		System.out.println("=== testProvider ===");
-		crmContainer.bind(SampleStringProvider.class);
-		crmContainer.bind(SampleSimpleClassProvider.class);
+		witContainer.bind(SampleStringProvider.class);
+		witContainer.bind(SampleSimpleClassProvider.class);
 		
-		crmContainer.bind("message").toProvider(SampleStringProvider.class);
-		crmContainer.bind(SimpleClass.class).toProvider(SampleSimpleClassProvider.class);
+		witContainer.bind("message").toProvider(SampleStringProvider.class);
+		witContainer.bind(SimpleClass.class).toProvider(SampleSimpleClassProvider.class);
 
-		SimpleClass o = crmContainer.getInstance(SimpleClass.class); 
+		SimpleClass o = witContainer.getInstance(SimpleClass.class); 
 		assertNotNull("SimpleClass-Instance is null! ", o);
 		String s = o.getMsg();
 		assertEquals("instance by provider", s);
 		
-		SimpleClass o2 = crmContainer.getInstance(SimpleClass.class);
+		SimpleClass o2 = witContainer.getInstance(SimpleClass.class);
 		assertEquals(o, o2);
 	}
 	
 	@Test
 	public void testInjectionOverExtendedClass() {
-		crmContainer.bind(AExtended.class);
+		witContainer.bind(AExtended.class);
 		
-		AExtended a = crmContainer.getInstance(AExtended.class);
+		AExtended a = witContainer.getInstance(AExtended.class);
 		assertNotNull(a.getB());
 	}
 	
@@ -178,15 +179,15 @@ public class CrmContainerTest {
 	public void testRuntime() {
 		System.out.println("\n=== testRuntime ===");
 		long time = System.currentTimeMillis();
-		crmContainer = new CrmContainer();
+		witContainer = new WitContainer();
 		bindClasses();
 		for(int i=1; i< 4500; i++) {
-			crmContainer.bind("key"+i).to("xxx");
+			witContainer.bind("key"+i).to("xxx");
 		}
 		time = printRunTime(time);
 		
-		a = crmContainer.getInstance(A.class);
-		b = crmContainer.getInstance(B.class);
+		a = witContainer.getInstance(A.class);
+		b = witContainer.getInstance(B.class);
 		time = printRunTime(time);
 	}
 
@@ -195,15 +196,15 @@ public class CrmContainerTest {
 	public void testRuntimeWithInitialCapa() {
 		System.out.println("\n=== testRuntimeWithInitialCapa ===");
 		long time = System.currentTimeMillis();
-		crmContainer = new CrmContainer(5000);
+		witContainer = new WitContainer(5000);
 		bindClasses();
 		for(int i=1; i< 4500; i++) {
-			crmContainer.bind("key"+i).to("xxx");
+			witContainer.bind("key"+i).to("xxx");
 		}
 		time = printRunTime(time);
 		
-		a = crmContainer.getInstance(A.class);
-		b = crmContainer.getInstance(B.class);
+		a = witContainer.getInstance(A.class);
+		b = witContainer.getInstance(B.class);
 		time = printRunTime(time);
 	}
 

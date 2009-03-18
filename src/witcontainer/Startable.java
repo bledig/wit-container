@@ -1,4 +1,4 @@
-package crmcontainer;
+package witcontainer;
 
 /**
  * Klassen, die dieses Interface implementieren, stellen eine start-Methode bereit, die nach Erzeugung und Injektion
