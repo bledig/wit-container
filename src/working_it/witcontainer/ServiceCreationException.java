@@ -3,7 +3,8 @@ package working_it.witcontainer;
 import java.lang.reflect.Method;
 
 /**
- *
+ * Exceptions die beim Erzeugen von Instancen aus dem Container 
+ * passieren können.
  *
  * @author Bernd Ledig
  *

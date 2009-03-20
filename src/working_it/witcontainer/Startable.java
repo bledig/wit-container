@@ -1,8 +1,8 @@
 package working_it.witcontainer;
 
 /**
- * Klassen, die dieses Interface implementieren, stellen eine start-Methode bereit, die nach Erzeugung und Injektion
- * der Dependencies aufgerufen wird
+ * Klassen, die dieses Interface implementieren, stellen eine start-Methode bereit, 
+ * die nach Erzeugung und Injektion der Dependencies aufgerufen wird.
  *
  *
  * @author Bernd Ledig

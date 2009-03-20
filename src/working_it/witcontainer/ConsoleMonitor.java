@@ -1,7 +1,8 @@
 package working_it.witcontainer;
 
 /**
- *
+ * Monitor-Implemtierung
+ * Gibt Meldungen auf STDOUT aus
  *
  * @author Bernd Ledig
  *

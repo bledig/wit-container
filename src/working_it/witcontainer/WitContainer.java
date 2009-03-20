@@ -25,7 +25,7 @@ public class WitContainer {
 	
 	
 	/**
-	 * optionaler Monitor, welcher die Erzuegung protokolliert
+	 * optionaler Monitor, welcher die Erzeugung protokolliert
 	 */
 	private Monitor monitor;
 	

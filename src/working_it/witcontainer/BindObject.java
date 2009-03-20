@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Internes Object zum Speicheren der
- * Zuordnung Key zur Impl-Kalsse,
+ * Zuordnung Key zur Impl-Klasse,
  * evetuell schon existierenen Instance und ob es als Provider arbeitet
  *
  * @author Bernd Ledig
